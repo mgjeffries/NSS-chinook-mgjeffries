@@ -178,13 +178,42 @@ Group by EmployeeFullName
 
 -- 21 sales_agent_customer_count.sql: Provide a query that shows the count of customers assigned to each sales agent.
 
-
+SELECT e.FirstName || ' ' || e.LastName as EmployeeFullName,
+COUNT(i.CustomerId) as TotalCustomers
+FROM Invoice i
+    JOIN Customer c
+    ON i.CustomerId = c.CustomerId
+    JOIN Employee e
+    ON c.SupportRepId = e.EmployeeId
+Group by EmployeeFullName;
 
 -- 22 sales_per_country.sql: Provide a query that shows the total sales per country.
 
+SELECT BillingCountry, SUM(Total) CountrySalesTotal
+FROM Invoice
+GROUP BY Invoice.BillingCountry
+ORDER BY CountrySalesTotal DESC;
+
 -- 23 top_country.sql: Which country's customers spent the most?
 
+SELECT BillingCountry, MAX(CountrySalesTotal) Sales
+FROM (SELECT BillingCountry, SUM(Total) CountrySalesTotal
+FROM Invoice
+GROUP BY Invoice.BillingCountry
+ORDER BY CountrySalesTotal DESC
+);
+
 -- 24 top_2013_track.sql: Provide a query that shows the most purchased track of 2013.
+
+SELECT SUM(InvoiceLine.Quantity) as SalesTotal, Track.Name
+FROM Invoice
+    JOIN InvoiceLine
+    ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+    JOIN Track
+    ON Track.TrackId = InvoiceLine.TrackId
+WHERE STRFTIME('%Y', InvoiceDate) = '2013'
+GROUP BY Track.TrackId
+ORDER BY Track.Name DESC;
 
 -- 25 top_5_tracks.sql: Provide a query that shows the top 5 most purchased tracks over all.
 
