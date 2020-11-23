@@ -149,21 +149,22 @@ Group by EmployeeFullName;
 -- 19 top_2009_agent.sql: Which sales agent made the most in sales in 2009?
 -- Hint: Use the MAX function on a subquery.
 
-
+Select EmployeeFullName, Max(individual2009Sales)
+FROM (
 SELECT e.FirstName || ' ' || e.LastName as EmployeeFullName, 
-    i.InvoiceDate,
-    i.Total
+    SUM(i.Total) as individual2009Sales
     FROM Invoice i
         JOIN Customer c
         ON i.CustomerId = c.CustomerId
         JOIN Employee e
         ON c.SupportRepId = e.EmployeeId
-    WHERE "2009-00-00 00:00:00" <= i.InvoiceDate < "2010-00-00 00:00:00" ;
-
+    WHERE STRFTIME("%Y", i.InvoiceDate) = "2009"
+GROUP BY EmployeeFullName
+);
 
 -- 20 top_agent.sql: Which sales agent made the most in sales over all?
 
-SELECT EmployeeFullName, MAX(SalesPersonTotal.SalesTotal)
+SELECT EmployeeFullName, MAX(SalesPersonTotal.SalesTotal) as SalesPersonMax
 FROM (
     SELECT e.FirstName || ' ' || e.LastName as EmployeeFullName,
 SUM(i.Total) as SalesTotal
@@ -176,6 +177,8 @@ Group by EmployeeFullName
 ) as SalesPersonTotal;
 
 -- 21 sales_agent_customer_count.sql: Provide a query that shows the count of customers assigned to each sales agent.
+
+
 
 -- 22 sales_per_country.sql: Provide a query that shows the total sales per country.
 
