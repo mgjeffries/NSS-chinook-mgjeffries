@@ -72,7 +72,18 @@ GROUP BY STRFTIME('%Y', InvoiceDate);
 
 -- 10 invoice_37_line_item_count.sql: Looking at the InvoiceLine table, provide a query that COUNTs the number of line items for Invoice ID 37.
 
+SELECT COUNT(InvoiceId)
+FROM InvoiceLine
+Where InvoiceId = 37;
+
 -- 11 line_items_per_invoice.sql: Looking at the InvoiceLine table, provide a query that COUNTs the number of line items for each Invoice. HINT: GROUP BY
+
+Select i.InvoiceId, 
+    il.* --COUNT(il.InvoiceLineId)
+FROM Invoice i
+JOIN InvoiceLine il
+    ON i.InvoiceId = il.InvoiceId
+GROUP BY i.InvoiceId
 
 -- 12 line_item_track.sql: Provide a query that includes the purchased track name with each invoice line item.
 
