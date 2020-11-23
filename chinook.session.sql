@@ -205,7 +205,9 @@ ORDER BY CountrySalesTotal DESC
 
 -- 24 top_2013_track.sql: Provide a query that shows the most purchased track of 2013.
 
-SELECT SUM(InvoiceLine.Quantity) as SalesTotal, Track.Name
+SELECT MAX(SalesTotal), Name
+FROM(
+SELECT SUM(InvoiceLine.Quantity) as SalesTotal, Track.Name 
 FROM Invoice
     JOIN InvoiceLine
     ON InvoiceLine.InvoiceId = Invoice.InvoiceId
@@ -213,10 +215,44 @@ FROM Invoice
     ON Track.TrackId = InvoiceLine.TrackId
 WHERE STRFTIME('%Y', InvoiceDate) = '2013'
 GROUP BY Track.TrackId
-ORDER BY Track.Name DESC;
-
+ORDER BY Track.Name DESC
+)
+;
 -- 25 top_5_tracks.sql: Provide a query that shows the top 5 most purchased tracks over all.
+
+Select Track.Name, SUM(InvoiceLine.Quantity) as SalesTotal
+From InvoiceLine
+JOIN Track
+    ON Track.TrackId = InvoiceLine.TrackId
+GROUP BY Track.TrackId
+ORDER BY SalesTotal DESC
+LIMIT 5;
 
 -- 26 top_3_artists.sql: Provide a query that shows the top 3 best selling artists.
 
+Select Artist.Name, SUM(InvoiceLine.Quantity) as TracksSold
+FROM Artist
+Join Album
+ON Artist.ArtistId = Album.ArtistId
+Join Track
+ON Album.AlbumId = Track.AlbumId
+Join InvoiceLine 
+on Track.TrackId = InvoiceLine.TrackId
+Group By Artist.ArtistId
+Order by TracksSold DESC
+Limit 3;
+
 -- 27 top_media_type.sql: Provide a query that shows the most purchased Media Type.
+
+
+SELECT Name, Max(TracksSold) as TracksSold
+FROM (
+Select MediaType.Name, SUM(InvoiceLine.Quantity) as TracksSold
+FROM MediaType
+Join Track
+ON MediaType.MediaTypeId = Track.MediaTypeId
+Join InvoiceLine 
+on Track.TrackId = InvoiceLine.TrackId
+Group By MediaType.MediaTypeId
+)
+;
