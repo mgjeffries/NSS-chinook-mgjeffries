@@ -78,8 +78,7 @@ Where InvoiceId = 37;
 
 -- 11 line_items_per_invoice.sql: Looking at the InvoiceLine table, provide a query that COUNTs the number of line items for each Invoice. HINT: GROUP BY
 
-Select i.InvoiceId, 
-    il.* --COUNT(il.InvoiceLineId)
+Select i.InvoiceId, COUNT(il.InvoiceLineId) InvoiceLines
 FROM Invoice i
 JOIN InvoiceLine il
     ON i.InvoiceId = il.InvoiceId
@@ -119,16 +118,62 @@ GROUP By Playlist.Name;
 
 -- 16 tracks_no_id.sql: Provide a query that shows all the Tracks, but displays no IDs. The result should include the Album name, Media type and Genre.
 
-
+Select Track.name as TrackName, Album.Title as AlbumName, MediaType.Name as MediaTypeName, Genre.Name as GenreName
+FROM Track
+    JOIN Album
+    ON Album.AlbumId = Track.AlbumId
+    JOIN MediaType
+    ON MediaType.MediaTypeId = Track.MediaTypeId
+    JOIN Genre
+    ON Genre.GenreId = Track.GenreId;
 
 -- 17 invoices_line_item_count.sql: Provide a query that shows all Invoices but includes the # of invoice line items.
 
+Select i.*, COUNT(il.InvoiceLineId) InvoiceLines
+FROM Invoice i
+JOIN InvoiceLine il
+    ON i.InvoiceId = il.InvoiceId
+GROUP BY i.InvoiceId;
+
 -- 18 sales_agent_total_sales.sql: Provide a query that shows total sales made by each sales agent.
+
+SELECT e.FirstName || ' ' || e.LastName as EmployeeFullName,
+SUM(i.Total) as SalesTotal
+FROM Invoice i
+    JOIN Customer c
+ON i.CustomerId = c.CustomerId
+    JOIN Employee e
+ON c.SupportRepId = e.EmployeeId
+Group by EmployeeFullName;
 
 -- 19 top_2009_agent.sql: Which sales agent made the most in sales in 2009?
 -- Hint: Use the MAX function on a subquery.
 
+
+SELECT e.FirstName || ' ' || e.LastName as EmployeeFullName, 
+    i.InvoiceDate,
+    i.Total
+    FROM Invoice i
+        JOIN Customer c
+        ON i.CustomerId = c.CustomerId
+        JOIN Employee e
+        ON c.SupportRepId = e.EmployeeId
+    WHERE "2009-00-00 00:00:00" <= i.InvoiceDate < "2010-00-00 00:00:00" ;
+
+
 -- 20 top_agent.sql: Which sales agent made the most in sales over all?
+
+SELECT EmployeeFullName, MAX(SalesPersonTotal.SalesTotal)
+FROM (
+    SELECT e.FirstName || ' ' || e.LastName as EmployeeFullName,
+SUM(i.Total) as SalesTotal
+FROM Invoice i
+    JOIN Customer c
+ON i.CustomerId = c.CustomerId
+    JOIN Employee e
+ON c.SupportRepId = e.EmployeeId
+Group by EmployeeFullName
+) as SalesPersonTotal;
 
 -- 21 sales_agent_customer_count.sql: Provide a query that shows the count of customers assigned to each sales agent.
 
